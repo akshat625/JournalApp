@@ -28,22 +28,23 @@ public class JournalService {
         return journalRepo.findById(id).orElse(null);
     }
 
-    public JournalEntry updateJournalEntryById(ObjectId id, JournalEntry entry) {
+    public JournalEntry updateJournalEntryById(ObjectId id, JournalEntry newEntry) {
 
-        JournalEntry journalEntry = journalRepo.findById(id).orElse(null);
-        if(journalEntry == null) {
+        JournalEntry oldEntry = journalRepo.findById(id).orElse(null);
+        if(oldEntry == null) {
             return null;
         }
-        journalEntry.setTitle(entry.getTitle());
-        journalEntry.setContent(entry.getContent());
-        journalEntry.setDate(entry.getDate());
-        return journalRepo.save(journalEntry);
+        oldEntry.setTitle(newEntry.getTitle()!=null && !newEntry.getTitle().isEmpty() ? newEntry.getTitle() : oldEntry.getTitle());
+        oldEntry.setContent(newEntry.getContent()!=null && !newEntry.getContent().isEmpty() ? newEntry.getContent() : oldEntry.getContent());
+        return journalRepo.save(oldEntry);
 
     }
 
     public Optional<JournalEntry> deleteJournalEntryById(ObjectId id) {
-        Optional<JournalEntry> entry = journalRepo.findById(id);
-        journalRepo.deleteById(id);
-        return entry;
+        Optional<JournalEntry> journalEntry = journalRepo.findById(id);
+        if(journalEntry.isPresent()) {
+            journalRepo.deleteById(id);
+        }
+        return journalEntry;
     }
 }
