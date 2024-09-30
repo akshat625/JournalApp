@@ -4,6 +4,7 @@ import com.akshat.journalApp.model.JournalEntry;
 import com.akshat.journalApp.service.JournalService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -18,28 +19,28 @@ public class JournalController {
     JournalService journalService;
 
     @GetMapping
-    public List<JournalEntry> getAll(){
+    public ResponseEntity<List<JournalEntry>> getAll(){
         return journalService.getJournalEntries();
     }
 
     @PostMapping
-    public JournalEntry createEntry(@RequestBody JournalEntry entry){
+    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry){
         entry.setDate(LocalDateTime.now());
         return journalService.createJournalEntry(entry);
     }
 
     @GetMapping("id/{id}")
-    public JournalEntry  getJournalEntryById(@PathVariable ObjectId id){
+    public ResponseEntity<JournalEntry>  getJournalEntryById(@PathVariable ObjectId id){
         return journalService.getJournalEntryById(id);
     }
 
     @PutMapping("id/{id}")
-    public JournalEntry updateJournalEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry entry){
+    public ResponseEntity<JournalEntry> updateJournalEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry entry){
         return journalService.updateJournalEntryById(id, entry);
     }
 
     @DeleteMapping("id/{id}")
-    public Optional<JournalEntry> deleteJournalEntryById(@PathVariable ObjectId id){
+    public ResponseEntity<JournalEntry> deleteJournalEntryById(@PathVariable ObjectId id){
         return journalService.deleteJournalEntryById(id);
     }
 }
