@@ -20,11 +20,13 @@ public class JournalService {
 
     public ResponseEntity<List<JournalEntry>> getJournalEntries() {
         try {
-            return new ResponseEntity<>(journalRepo.findAll(), HttpStatus.OK);
+            if(!journalRepo.findAll().isEmpty()) {
+                return new ResponseEntity<>(journalRepo.findAll(), HttpStatus.OK);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     public ResponseEntity<JournalEntry> createJournalEntry(JournalEntry entry) {
