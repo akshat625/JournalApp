@@ -29,7 +29,14 @@ public class UserService {
     }
 
     public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userRepo.findAll(), HttpStatus.OK);
+        try {
+            if(!userRepo.findAll().isEmpty()) {
+                return new ResponseEntity<>(userRepo.findAll(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     public User getUserById(ObjectId id) {
