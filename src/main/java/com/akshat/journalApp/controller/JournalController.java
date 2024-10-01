@@ -2,6 +2,7 @@ package com.akshat.journalApp.controller;
 
 import com.akshat.journalApp.model.JournalEntry;
 import com.akshat.journalApp.service.JournalService;
+import com.akshat.journalApp.service.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +18,18 @@ public class JournalController {
 
     @Autowired
     JournalService journalService;
+    @Autowired
+    private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<JournalEntry>> getAll(){
-        return journalService.getJournalEntries();
+    @GetMapping("{userName}")
+    public ResponseEntity<List<JournalEntry>> getAllJournalEntriesOfUser(@PathVariable String userName){
+        return journalService.getAllJournalEntriesOfUser(userName);
     }
 
-    @PostMapping
-    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry){
+    @PostMapping("{userName}")
+    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry, @PathVariable String userName){
         entry.setDate(LocalDateTime.now());
-        return journalService.createJournalEntry(entry);
+        return journalService.createJournalEntryOfUser(entry,userName);
     }
 
     @GetMapping("id/{id}")

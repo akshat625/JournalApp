@@ -1,7 +1,9 @@
 package com.akshat.journalApp.service;
 
 import com.akshat.journalApp.model.JournalEntry;
+import com.akshat.journalApp.model.User;
 import com.akshat.journalApp.repo.JournalRepo;
+import com.akshat.journalApp.repo.UserRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +18,15 @@ public class JournalService {
     @Autowired
     JournalRepo journalRepo;
 
+    @Autowired
+    UserRepo userRepo;
 
-    public ResponseEntity<List<JournalEntry>> getJournalEntries() {
+
+    public ResponseEntity<List<JournalEntry>> getAllJournalEntriesOfUser(String userName) {
         try {
+            User user = userRepo.findByUserName(userName);
             if(!journalRepo.findAll().isEmpty()) {
-                return new ResponseEntity<>(journalRepo.findAll(), HttpStatus.OK);
+                return new ResponseEntity<>(user.getJournalEntries(), HttpStatus.OK);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -28,9 +34,13 @@ public class JournalService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity<JournalEntry> createJournalEntry(JournalEntry entry) {
+    public ResponseEntity<JournalEntry> createJournalEntryOfUser(JournalEntry entry, String userName) {
         try{
-            return new ResponseEntity<>(journalRepo.save(entry), HttpStatus.CREATED);
+            User user = userRepo.findByUserName(userName);
+            journalRepo.save(entry);
+            user.getJournalEntries().add(entry);
+            userRepo.save(user);
+            return new ResponseEntity<>( HttpStatus.CREATED);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -24,6 +24,7 @@ public class User {
     private String password;
 
 
+
     //@DBRef is used to reference another document in the database
     @DBRef
     private List<JournalEntry> journalEntries = new ArrayList<>();
