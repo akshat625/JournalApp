@@ -45,7 +45,6 @@ public class JournalService {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
     }
 
     public ResponseEntity<JournalEntry> getJournalEntryById(ObjectId id) {
