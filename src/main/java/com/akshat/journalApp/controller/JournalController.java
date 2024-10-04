@@ -27,7 +27,8 @@ public class JournalController {
     }
 
     @PostMapping("{userName}")
-    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry, @PathVariable String userName){
+    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry,
+                                                    @PathVariable String userName){
         entry.setDate(LocalDateTime.now());
         return journalService.createJournalEntryOfUser(entry,userName);
     }
@@ -37,13 +38,16 @@ public class JournalController {
         return journalService.getJournalEntryById(id);
     }
 
-    @PutMapping("id/{id}")
-    public ResponseEntity<JournalEntry> updateJournalEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry entry){
-        return journalService.updateJournalEntryById(id, entry);
+    @PutMapping("id/{userName}/{id}")
+    public ResponseEntity<JournalEntry> updateJournalEntryById(@PathVariable ObjectId id,
+                                                               @PathVariable String userName,
+                                                               @RequestBody JournalEntry entry){
+        return journalService.updateJournalEntryById(id, userName, entry);
     }
 
-    @DeleteMapping("id/{id}")
-    public ResponseEntity<JournalEntry> deleteJournalEntryById(@PathVariable ObjectId id){
-        return journalService.deleteJournalEntryById(id);
+    @DeleteMapping("id/{userName}/{id}")
+    public ResponseEntity<JournalEntry> deleteJournalEntryById(@PathVariable ObjectId id,
+                                                               @PathVariable String userName){
+        return journalService.deleteJournalEntryById(id, userName);
     }
 }

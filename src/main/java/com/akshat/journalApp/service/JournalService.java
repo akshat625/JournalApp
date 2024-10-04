@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class JournalService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Transactional
     public ResponseEntity<JournalEntry> createJournalEntryOfUser(JournalEntry entry, String userName) {
         try{
             User user = userRepo.findByUserName(userName);
@@ -56,9 +58,10 @@ public class JournalService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<JournalEntry> updateJournalEntryById(ObjectId id, JournalEntry newEntry) {
+    public ResponseEntity<JournalEntry> updateJournalEntryById(ObjectId id, String userName, JournalEntry newEntry) {
 
         try{
+            User user = userRepo.findByUserName(userName);
             JournalEntry oldEntry = journalRepo.findById(id).orElse(null);
             if(oldEntry == null) {
                 return null;
@@ -73,9 +76,11 @@ public class JournalService {
 
     }
 
-    public ResponseEntity<JournalEntry> deleteJournalEntryById(ObjectId id) {
+    @Transactional
+    public ResponseEntity<JournalEntry> deleteJournalEntryById(ObjectId id, String userName) {
         try {
-            User user = userRepo.findByJournalEntriesId(id);
+//            User user = userRepo.findByJournalEntriesId(id);
+            User user = userRepo.findByUserName(userName);
             if(user != null) {
                 user.getJournalEntries().removeIf(journalEntry -> journalEntry.getId().equals(id));
                 userRepo.save(user);
