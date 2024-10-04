@@ -71,11 +71,15 @@ public class JournalService {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-
     }
 
     public ResponseEntity<JournalEntry> deleteJournalEntryById(ObjectId id) {
         try {
+            User user = userRepo.findByJournalEntriesId(id);
+            if(user != null) {
+                user.getJournalEntries().removeIf(journalEntry -> journalEntry.getId().equals(id));
+                userRepo.save(user);
+            }
             JournalEntry journalEntry = journalRepo.findById(id).orElse(null);
             if(journalEntry != null) {
                 journalRepo.deleteById(id);
