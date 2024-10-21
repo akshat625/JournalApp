@@ -23,11 +23,10 @@ public class User {
     @NonNull
     private String password;
 
-
-
     //@DBRef is used to reference another document in the database
     @DBRef
     private List<JournalEntry> journalEntries = new ArrayList<>();
+    private List<String> roles;
 
 
 
