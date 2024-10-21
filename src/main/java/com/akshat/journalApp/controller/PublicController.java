@@ -9,25 +9,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/public")
+public class PublicController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return userService.getAllUsers();
+    @PostMapping("/create-user")
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        return userService.saveUser(user);
     }
 
-
-    @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "Journal App is up and running!";
     }
-
-
-
-
 
 }

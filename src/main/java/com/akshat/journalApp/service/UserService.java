@@ -7,8 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -17,8 +22,13 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
+
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public ResponseEntity<?> saveUser(User user) {
         try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(Arrays.asList("USER"));
             userRepo.save(user);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
@@ -51,17 +61,15 @@ public class UserService {
         return userRepo.findByUserName(username);
     }
 
-    public ResponseEntity<User> updateUser(User user,String userName) {
+    public ResponseEntity<User> updateUser(User user) {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
             User userInDb = userRepo.findByUserName(userName);
-            if(userInDb != null){
-                userInDb.setUserName(user.getUserName());
-                userInDb.setPassword(user.getPassword());
-                userRepo.save(userInDb);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
+            userInDb.setUserName(user.getUserName());
+            userInDb.setPassword(user.getPassword());
+            saveUser(userInDb);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
