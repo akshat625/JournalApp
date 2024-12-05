@@ -26,8 +26,10 @@ public class UserController {
         return userService.updateUser(user);
     }
 
-
-
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser() {
+        return userService.deleteUser();
+    }
 
 
 }

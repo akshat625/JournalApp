@@ -32,7 +32,7 @@ public class UserService {
             userRepo.save(user);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace( );
             return new ResponseEntity<>(HttpStatusCode.valueOf(403));
         }
 
@@ -53,9 +53,6 @@ public class UserService {
         return userRepo.findById(id).orElse(null);
     }
 
-    public void deleteUserById(ObjectId id) {
-        userRepo.deleteById(id);
-    }
 
     public User findByUserName(String username) {
         return userRepo.findByUserName(username);
@@ -77,5 +74,16 @@ public class UserService {
 
 
 
+    }
+
+    public ResponseEntity<?> deleteUser() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            userRepo.deleteByUserName(authentication.getName());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
