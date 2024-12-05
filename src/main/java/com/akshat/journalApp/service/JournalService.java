@@ -8,10 +8,13 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JournalService {
@@ -23,8 +26,12 @@ public class JournalService {
     UserRepo userRepo;
 
 
-    public ResponseEntity<List<JournalEntry>> getAllJournalEntriesOfUser(String userName) {
+
+
+    public ResponseEntity<List<JournalEntry>>  getAllJournalEntriesOfUser() {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
             User user = userRepo.findByUserName(userName);
             if(!journalRepo.findAll().isEmpty()) {
                 return new ResponseEntity<>(user.getJournalEntries(), HttpStatus.OK);
@@ -35,9 +42,11 @@ public class JournalService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Transactional
-    public ResponseEntity<JournalEntry> createJournalEntryOfUser(JournalEntry entry, String userName) {
+
+    public ResponseEntity<JournalEntry> createJournalEntryOfUser(JournalEntry entry) {
         try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
             User user = userRepo.findByUserName(userName);
             journalRepo.save(entry);
             user.getJournalEntries().add(entry);
@@ -58,11 +67,14 @@ public class JournalService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<JournalEntry> updateJournalEntryById(ObjectId id, String userName, JournalEntry newEntry) {
+    public ResponseEntity<JournalEntry> updateJournalEntryById(ObjectId id, JournalEntry newEntry) {
 
         try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
             User user = userRepo.findByUserName(userName);
             JournalEntry oldEntry = journalRepo.findById(id).orElse(null);
+            List<JournalEntry> collect = user.getJournalEntries().stream().filter(x -> x.getId().equals(id)).collect(Collectors.toList());
             if(oldEntry == null) {
                 return null;
             }
@@ -71,7 +83,6 @@ public class JournalService {
             return new ResponseEntity<>(journalRepo.save(oldEntry), HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
-
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

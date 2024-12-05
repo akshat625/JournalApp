@@ -35,8 +35,9 @@ public class UserService {
             e.printStackTrace( );
             return new ResponseEntity<>(HttpStatusCode.valueOf(403));
         }
-
     }
+
+
 
     public ResponseEntity<List<User>> getAllUsers() {
         try {
@@ -71,9 +72,6 @@ public class UserService {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-
-
     }
 
     public ResponseEntity<?> deleteUser() {
