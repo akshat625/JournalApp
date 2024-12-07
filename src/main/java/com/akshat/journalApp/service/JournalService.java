@@ -43,6 +43,7 @@ public class JournalService {
     }
 
 
+//    @Transactional
     public ResponseEntity<JournalEntry> createJournalEntryOfUser(JournalEntry entry) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

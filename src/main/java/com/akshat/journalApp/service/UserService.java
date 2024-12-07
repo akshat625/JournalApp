@@ -2,7 +2,10 @@ package com.akshat.journalApp.service;
 
 import com.akshat.journalApp.model.User;
 import com.akshat.journalApp.repo.UserRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -25,6 +29,10 @@ public class UserService {
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+//    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
+    //controlled by public controller
     public ResponseEntity<?> saveUser(User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -32,13 +40,17 @@ public class UserService {
             userRepo.save(user);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
+//            log.error("Error while saving user: " + e.getMessage());
+            log.error("Error occurred for {} :", user.getUserName(), e);
+//          logger.error("Error while saving user: " + e.getMessage());
+//            logger.warn("Error occurred for {} :", user.getUserName(), e);
             e.printStackTrace( );
             return new ResponseEntity<>(HttpStatusCode.valueOf(403));
         }
     }
 
 
-
+    //controlled by admin controller
     public ResponseEntity<List<User>> getAllUsers() {
         try {
             if(!userRepo.findAll().isEmpty()) {
@@ -50,17 +62,20 @@ public class UserService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //not controlled by any controller
     public User getUserById(ObjectId id) {
         return userRepo.findById(id).orElse(null);
     }
 
-
+    //not controlled by any controller
     public User findByUserName(String username) {
         return userRepo.findByUserName(username);
     }
 
+    //controlled by user controller
     public ResponseEntity<User> updateUser(User user) {
         try {
+            //Authentication object is used to get the current logged-in user.
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userName = authentication.getName();
             User userInDb = userRepo.findByUserName(userName);
@@ -74,6 +89,7 @@ public class UserService {
         }
     }
 
+    //controlled by user controller
     public ResponseEntity<?> deleteUser() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -83,5 +99,10 @@ public class UserService {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<?> greeting() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return new ResponseEntity<>("Hello " + authentication.getName(), HttpStatus.OK);
     }
 }

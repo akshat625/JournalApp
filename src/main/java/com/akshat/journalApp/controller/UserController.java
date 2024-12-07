@@ -16,10 +16,9 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<?> greeting() {
+        return userService.greeting();
     }
-
 
     @PutMapping
     public ResponseEntity<User> updateUser(@RequestBody User user) {

@@ -2,7 +2,6 @@ package com.akshat.journalApp.controller;
 
 import com.akshat.journalApp.model.JournalEntry;
 import com.akshat.journalApp.service.JournalService;
-import com.akshat.journalApp.service.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/journal")
@@ -18,8 +17,6 @@ public class JournalController {
 
     @Autowired
     JournalService journalService;
-    @Autowired
-    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<JournalEntry>> getAllJournalEntriesOfUser(){
